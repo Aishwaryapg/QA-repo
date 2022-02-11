@@ -3,7 +3,7 @@
 <suite name="Suite">
   <test thread-count="5" name="Test">
     <classes>
-      <class name="testcases.SearchFlight1"/>
+      <class name="testcases.SearchFlight"/>
     </classes>
   </test> 
 </suite> 
