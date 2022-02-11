@@ -6,7 +6,6 @@ import java.time.Duration;
 import java.time.Month;
 import java.util.Calendar;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
@@ -21,12 +20,13 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeClass;
 
 public class BaseClass {
 	ReadConfig rc = new ReadConfig();
@@ -43,6 +43,7 @@ public class BaseClass {
  * Launch application, ClearTrip
  *
  */
+	@BeforeClass
 	public void launchApplication() {
 		System.setProperty("webdriver.chrome.driver", "src\\resources\\chromedriver.exe");
 		DesiredCapabilities dc = new DesiredCapabilities();
@@ -150,6 +151,7 @@ public class BaseClass {
 /*
  * After test actions
  */
+	@AfterTest
 	public void teardown() {
 		driver.quit();
 		System.out.println("------Flight search Done-----");
@@ -330,7 +332,7 @@ public class BaseClass {
 	public void userWaitsForElementtobeVisisble(String locator) {
 		// TODO Auto-generated method stub
 		try {
-			wait = new WebDriverWait(driver, 5);
+			wait = new WebDriverWait(driver, Duration.ofSeconds(5));
 			WebElement element = getWebElement(locator);
 			wait.until(ExpectedConditions.visibilityOf(element));
 
