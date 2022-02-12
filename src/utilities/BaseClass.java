@@ -10,7 +10,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
 
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
@@ -39,10 +38,11 @@ public class BaseClass {
 	static int jumpMonthsBy = 0;
 
 	static boolean increment = true;
-/*  
- * Launch application, ClearTrip
- *
- */
+
+	/*
+	 * Launch application, ClearTrip
+	 *
+	 */
 	@BeforeClass
 	public void launchApplication() {
 		System.setProperty("webdriver.chrome.driver", "src\\resources\\chromedriver.exe");
@@ -52,7 +52,7 @@ public class BaseClass {
 		options.addArguments("--no-sandbox", "--disable-dev-shm-usage",
 				"--disable-blink-features=AutomationControlled");
 
-		//options.setExperimentalOption("useAutomationExtension", false);
+		// options.setExperimentalOption("useAutomationExtension", false);
 
 		driver = new ChromeDriver(options);
 		driver.manage().window().maximize();
@@ -63,16 +63,17 @@ public class BaseClass {
 		driver.manage().timeouts().implicitlyWait(60, TimeUnit.SECONDS);
 
 	}
-/*
- * Select a value from a list by filtering text
- */
+
+	/*
+	 * Select a value from a list by filtering text
+	 */
 	public void selectValueFromList(String locator, String text) throws InterruptedException {
 		// TODO Auto-generated method stub
 		String str = rc.getLocatorValue(locator);
 
 		String locatorValue = str.split("__")[1];
 		List<WebElement> elementList = driver.findElements(By.xpath(locatorValue));
-		//System.out.println(elementList);
+		// System.out.println(elementList);
 
 		for (int i = 0; i < elementList.size(); i++) {
 			System.out.println(elementList.get(i).getText());
@@ -84,24 +85,25 @@ public class BaseClass {
 		}
 	}
 
-/*
- * Select a value from DropDown
- */
+	/*
+	 * Select a value from DropDown
+	 */
 
-	public void selectAdult( String locator,String value) {
+	public void selectAdult(String locator, String value) {
 		// TODO Auto-generated method stub
 		try {
-		WebElement element = getWebElement(locator);
-		Select select = new Select(element);
-		select.selectByValue(value);
+			WebElement element = getWebElement(locator);
+			Select select = new Select(element);
+			select.selectByValue(value);
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-/*
- * Click an element
- */
+
+	/*
+	 * Click an element
+	 */
 	public void clickElement(String locator) {
 		// TODO Auto-generated method stub
 		try {
@@ -112,9 +114,10 @@ public class BaseClass {
 			e.printStackTrace();
 		}
 	}
-/*
- * Extracting WebElement from locator value stored in property file
- */
+
+	/*
+	 * Extracting WebElement from locator value stored in property file
+	 */
 	public WebElement getWebElement(String locator) throws Exception {
 		// TODO Auto-generated method stub
 		String str = rc.getLocatorValue(locator);
@@ -135,9 +138,10 @@ public class BaseClass {
 		} else
 			throw new Exception("Unknown locator");
 	}
-/*
- * Enter a value in textbox/input
- */
+
+	/*
+	 * Enter a value in textbox/input
+	 */
 	public void enterText(String locator, String text) {
 		// TODO Auto-generated method stub
 		try {
@@ -148,38 +152,60 @@ public class BaseClass {
 			e.printStackTrace();
 		}
 	}
-/*
- * After test actions
- */
+
+	/*
+	 * After test actions
+	 */
 	@AfterTest
 	public void teardown() {
 		driver.quit();
 		System.out.println("------Flight search Done-----");
 
 	}
+
 	/*
 	 * To check an element present or not
 	 */
-	public boolean isElementPresent(String locator){
-       
-        	String str = rc.getLocatorValue(locator);
+	public boolean isElementPresent(String locator) {
 
-    		String locatorValue = str.split("__")[1];
-    		List<WebElement> elements = driver.findElements(By.xpath(locatorValue));
-    		if(elements.size()==0)
-    		{
-    			return false;
-    		}
-    		else 
-    			{
-    				return true;
-    			}
-                	
-    }
-/*
- * Select date from datepicker
- */
-	public void selectDate(String dateToSet,String iconlocator,String datepickerlocator) throws InterruptedException {
+		String str = rc.getLocatorValue(locator);
+
+		String locatorValue = str.split("__")[1];
+		List<WebElement> elements = driver.findElements(By.xpath(locatorValue));
+		if (elements.size() == 0) {
+			return false;
+		} else {
+			return true;
+		}
+
+	}
+
+	/*
+	 * Go to the required month of date picker
+	 */
+	public void gotoTargetMonth(String dateToSet, String next) throws Exception {
+		getCurrentDateMonthAndYear();
+		System.out.println(currentDay + "   " + currentMonth + "   " + currentYear);
+
+		GetTargetDateMonthAndYear(dateToSet);
+		System.out.println(targetDay + "   " + targetMonth + "   " + targetYear);
+
+		CalculateHowManyMonthsToJump();
+
+		for (int i = 0; i < (jumpMonthsBy); i++) {
+
+			if (increment) {
+
+				getWebElement(next).click();
+
+			}
+		}
+	}
+
+	/*
+	 * Select date from datepicker
+	 */
+	public void selectDate(String dateToSet,String iconlocator,String datepickerlocator,String nextButton) throws InterruptedException {
 		// TODO Auto-generated method stub
 		try{
 			
@@ -187,87 +213,33 @@ public class BaseClass {
 			{
 				
 				scrollDown(datepickerlocator);
-				getCurrentDateMonthAndYear();
-				System.out.println(currentDay + "   " + currentMonth + "   " + currentYear);
+				gotoTargetMonth(dateToSet,nextButton);
 
-				
-				GetTargetDateMonthAndYear(dateToSet);
-				System.out.println(targetDay + "   " + targetMonth + "   " + targetYear);
-
-				
-				CalculateHowManyMonthsToJump();
-				//System.out.println(jumpMonthsBy);
-				//System.out.println(increment);
-
-				for (int i = 0; i < (jumpMonthsBy); i++) {
-
-					if (increment) {
-
-						
-						driver.findElement(By
-								.xpath("(//*[name()='svg']//*[name()='path' and @d='M5 12.875h10.675l-4.9 4.9L12 19l7-7-7-7-1.225 1.225 4.9 4.9H5z'])[1]"))
-								.click();
-
-					}
-
-					Thread.sleep(1000);
-
-				}
+			//Thread.sleep(1000);
+			}
+			else{
+				JavascriptExecutor js = (JavascriptExecutor) driver; 
+			     js.executeScript("window.scrollBy(0,250)");
+			     
+				gotoTargetMonth(dateToSet,nextButton);
+			}
+			
 				String strMonth = (Month.of(targetMonth).name());
 				String strMonthFormatted = strMonth.charAt(0) + (strMonth.substring(1, 3)).toLowerCase();
 				String day = strMonthFormatted + " " + targetDay;
 				System.out.println(day);
 				driver.findElement(By.xpath("//div[contains(@aria-label, '" + day + "')]")).click();
-				}
-			
-		else
-		{
-
-			
-			JavascriptExecutor js = (JavascriptExecutor) driver; 
-		     js.executeScript("window.scrollBy(0,250)");
-		
-		getCurrentDateMonthAndYear();
-		System.out.println(currentDay + "   " + currentMonth + "   " + currentYear);
-
-		
-		GetTargetDateMonthAndYear(dateToSet);
-		System.out.println(targetDay + "   " + targetMonth + "   " + targetYear);
-
-		
-		CalculateHowManyMonthsToJump();
-		//System.out.println(jumpMonthsBy);
-		//System.out.println(increment);
-
-		for (int i = 0; i < (jumpMonthsBy); i++) {
-
-			if (increment) {
-
 				
-				driver.findElement(By
-						.xpath("(//*[name()='svg']//*[name()='path' and @d='M5 12.875h10.675l-4.9 4.9L12 19l7-7-7-7-1.225 1.225 4.9 4.9H5z'])[1]"))
-						.click();
-
-			}
-
-			Thread.sleep(1000);
-
-		}
-		String strMonth = (Month.of(targetMonth).name());
-		String strMonthFormatted = strMonth.charAt(0) + (strMonth.substring(1, 3)).toLowerCase();
-		String day = strMonthFormatted + " " + targetDay;
-		System.out.println(day);
-		driver.findElement(By.xpath("//div[contains(@aria-label, '" + day + "')]")).click();
-		}
-		}
-		catch (Exception e) {
-			System.out.println(e.getMessage());
-		}
-		
+		}catch(Exception e)
+	{
+		System.out.println(e.getMessage());
 	}
-/*
- * To get Current Date,Month and Year
- */
+
+	}
+
+	/*
+	 * To get Current Date,Month and Year
+	 */
 	public static void getCurrentDateMonthAndYear() {
 
 		Calendar cal = Calendar.getInstance();
@@ -277,9 +249,10 @@ public class BaseClass {
 		currentYear = cal.get(Calendar.YEAR);
 
 	}
-/*
- * To get the target date to be selected
- */
+
+	/*
+	 * To get the target date to be selected
+	 */
 	public static void GetTargetDateMonthAndYear(String dateString) {
 		String day = dateString.split("-")[0];
 		targetDay = Integer.parseInt(day);
@@ -290,9 +263,10 @@ public class BaseClass {
 		String year = dateString.split("-")[2];
 		targetYear = Integer.parseInt(year);
 	}
-/*
- * Calculate difference between current date and target date
- */
+
+	/*
+	 * Calculate difference between current date and target date
+	 */
 	public static void CalculateHowManyMonthsToJump() {
 
 		if ((targetMonth - currentMonth) > 0) {
@@ -305,9 +279,10 @@ public class BaseClass {
 		}
 
 	}
-/*
- * Select a radio button
- */
+
+	/*
+	 * Select a radio button
+	 */
 	public void selectRadioButton(String locator, String text) {
 		// TODO Auto-generated method stub
 		String str = rc.getLocatorValue(locator);
@@ -319,17 +294,19 @@ public class BaseClass {
 				element.click();
 		}
 	}
-/*
- * to wait for specific time
- */
+
+	/*
+	 * to wait for specific time
+	 */
 	public void userWaitsFor(int i) throws InterruptedException {
 		// TODO Auto-generated method stub
 		Thread.sleep(i * 1000);
 	}
-/*
- * to wait until an element to be visible
- */
-	public void userWaitsForElementtobeVisisble(String locator) {
+
+	/*
+	 * to wait until an element to be visible
+	 */
+	public void userWaitsForElementtobeVisible(String locator) {
 		// TODO Auto-generated method stub
 		try {
 			wait = new WebDriverWait(driver, Duration.ofSeconds(5));
@@ -340,9 +317,10 @@ public class BaseClass {
 			System.out.println(e.getMessage());
 		}
 	}
-/*
- * to press Enter key
- */
+
+	/*
+	 * to press Enter key
+	 */
 	public void pressEnter(String locator) {
 		// TODO Auto-generated method stub
 		try {
@@ -353,19 +331,17 @@ public class BaseClass {
 		}
 	}
 
-	
-/*
- * Scroll down in a page
- */
+	/*
+	 * Scroll down in a page
+	 */
 	public void scrollDown(String locator) {
 		// TODO Auto-generated method stub
 		try {
 			WebElement element = getWebElement(locator);
-			//Thread.sleep(1000);
+			// Thread.sleep(1000);
 			// JavascriptExecutor js = (JavascriptExecutor) driver;
 			// js.executeScript("arguments[0].scrollIntoView();", element);
 			element.sendKeys(Keys.PAGE_DOWN);
-			
 
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -374,29 +350,31 @@ public class BaseClass {
 	/*
 	 * to check whether an element is enabled
 	 */
-	
-	public void waitForElementtobeClickable(String locator) {
+
+	public void waitForElementtobeClickable(String string) {
 		// TODO Auto-generated method stub
 		try {
-			WebElement element = getWebElement(locator);
+			WebElement element = getWebElement(string);
 			wait = new WebDriverWait(driver, Duration.ofSeconds(5));
 			wait.until(ExpectedConditions.elementToBeClickable(element));
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
 	}
-/*
- * Select a flight based on price and duration
- */
+
+	/*
+	 * Select a flight based on price and duration
+	 */
 	public void selectFlight(String price, String duration, String string3) {
 		// TODO Auto-generated method stub
 		driver.findElement(By.xpath(
 				"//div/p[text()='" + duration + "']//following::p[3][text()='" + price + "']//following::button"))
 				.click();
 	}
-/*
- * Validate the text of an element
- */
+
+	/*
+	 * Validate the text of an element
+	 */
 	public void verifyText(String locator, String expectedText) {
 		// TODO Auto-generated method stub
 		try {
@@ -406,27 +384,28 @@ public class BaseClass {
 			System.out.println(e.getMessage());
 		}
 	}
-/*
- * Switch to child window
- */
+	/*
+	 * Switch to child window
+	 */
 
 	public void switchToWindow() {
 		// TODO Auto-generated method stub
 		String mainWindowHandle = driver.getWindowHandle();
 		for (String childWindowHandle : driver.getWindowHandles()) {
-			
+
 			if (!childWindowHandle.equals(mainWindowHandle)) {
 				driver.switchTo().window(childWindowHandle);
 			}
 		}
 
 	}
+
 	public void takesScreenshot() throws IOException {
 		// TODO Auto-generated method stub
-		TakesScreenshot scrShot =((TakesScreenshot)driver);		
-		File SrcFile=scrShot.getScreenshotAs(OutputType.FILE);		
-		File DestFile=new File("screenshots/Review.png");
-		
+		TakesScreenshot scrShot = ((TakesScreenshot) driver);
+		File SrcFile = scrShot.getScreenshotAs(OutputType.FILE);
+		File DestFile = new File("screenshots/Review.png");
+
 		FileUtils.copyFile(SrcFile, DestFile);
 	}
 }

@@ -31,15 +31,18 @@ public class SearchFlight extends BaseClass{
 		//select Departure date
 	    
 		clickElement("datepicker");
-    	
-    	selectDate("22-06-2022","travelSafeIcon","datepicker");
+		//userWaitsFor(3);
+    	selectDate("22-06-2022","travelSafeIcon","datepicker","nextButton");
     	userWaitsFor(3);
 		//select number of adults
     	selectAdult("adultsDropdown", "4");
 		clickElement("searchFlightButton");
-		userWaitsFor(6);
+		waitForElementtobeClickable("currency");
 		//select flight for the specific price and duration
-		selectFlight("₹6,412","1h 0m","bookFlight");
+		clickElement("currency");
+		selectValueFromList("currenciesList", "India");
+		userWaitsFor(3);
+		clickElement("bookFlight");
 		userWaitsFor(6);
 		switchToWindow();
 		//verify itinerary
